@@ -6,6 +6,6 @@
 #define _SESSION_H_
 
 //Send-and-Recv Function
-int SSL_send_and_recv(char *send_buf, char *recv_buf);
+int SSL_send_and_recv(char *host, char *send_buf, char *recv_buf);
 
 #endif

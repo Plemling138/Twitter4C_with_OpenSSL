@@ -5,11 +5,10 @@
 #ifndef _TWILIB_H_
 #define _TWILIB_H_
 
-#define BUF_SIZE 3000
+#define BUF_SIZE 300
 #define TWEET_LENGTH 150
 
 #define MSG_POST "POST"
-#define MSG_HTTP "HTTP/1.0"
 
 #define OAUTH_CONSKEY   "oauth_consumer_key="
 #define OAUTH_NONCE     "oauth_nonce="
@@ -20,13 +19,39 @@
 #define OAUTH_TOKEN     "oauth_token="
 #define OAUTH_VERIFIER  "oauth_verifier="
 
-#define VER_1_0   "1.0"
+#define OAUTH_VER_NUM   "1.0"
+#define HTTP_VER "HTTP/1.1"
+#define HOSTNAME "api.twitter.com"
+#define CONTENT_TYPE "application/x-www-form-urlencoded"
 #define HMAC_SHA1 "HMAC-SHA1"
 #define STATUS    "status="
 
 #define REQUEST_TOKEN_URL "https://api.twitter.com/oauth/request_token"
 #define ACCESS_TOKEN_URL  "https://api.twitter.com/oauth/access_token"
 #define STATUS_UPDATE_URL "https://api.twitter.com/1.1/statuses/update.json"
+
+#define REQUEST_TOKEN_ENCODED_URL "https%3A%2F%2Fapi.twitter.com%2Foauth%2Frequest_token"
+#define ACCESS_TOKEN_ENCODED_URL  "https%3A%2F%2Fapi.twitter.com%2Foauth%2Faccess_token"
+#define STATUS_UPDATE_ENCODED_URL "https%3A%2F%2Fapi.twitter.com%2F1.1%2Fstatuses%2Fupdate.json"
+
+/*Fit memory for Linux, and can use dynamic memory allocation*/
+//#define USE_DYNAMIC_MEMORY_ALLOCATION
+//#define USE_MULTIBYTE_CHAR
+
+#ifndef USE_MULTIBYTE_CHAR
+	#define ENCODED_CHAR_MARGIN 2
+	#define MAX_LENGTH_MARGIN 1
+#endif
+#ifdef USE_MULTIBYTE_CHAR
+	#define ENCODED_CHAR_MARGIN 2
+	#define MAX_LENGTH_MARGIN 3
+#endif
+
+#ifndef USE_DYNAMIC_MEMORY_ALLOCATION
+	#define USE_STATIC_MEMORY_ALLOCATION
+	#define TWEET_MAX_LENGTH 140 * (MAX_LENGTH_MARGIN)
+#endif
+
 
 struct Twitter_consumer_token
 {
@@ -52,5 +77,6 @@ struct Twitter_access_token
 int Twitter_GetRequestToken(struct Twitter_consumer_token *c, struct Twitter_request_token *r);
 int Twitter_GetAccessToken(struct Twitter_consumer_token *c, struct Twitter_request_token *r, struct Twitter_access_token *a);
 int Twitter_UpdateStatus(struct Twitter_consumer_token *c, struct Twitter_access_token *a, char *status);
+int Twitter_getUserStream(struct Twitter_consumer_token *c, struct Twitter_access_token *a);
 
 #endif

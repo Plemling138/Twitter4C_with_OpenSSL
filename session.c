@@ -2,12 +2,13 @@
  * (C)2013-14 Plemling138
  */
 
- #include <stdio.h>
+#include <stdio.h>
 #include <string.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <openssl/crypto.h>
 #include <openssl/ssl.h>
@@ -17,9 +18,11 @@
 #include "twilib.h"
 #include "session.h"
 
+#define SHOW_RESPONSE 0
+
 int sock = 0;
 
-int SSL_send_and_recv(char *send_buf, char *recv_buf)
+int SSL_send_and_recv(char *hostname, char *send_buf, char *recv_buf)
 {
   SSL* ssl;
   SSL_CTX* ctx;
@@ -29,8 +32,8 @@ int SSL_send_and_recv(char *send_buf, char *recv_buf)
   struct hostent *host = 0;
 
   //DNS Resolve
-  if((host = gethostbyname("api.twitter.com")) == NULL) {
-    printf("Failed to resolve api.twitter.com\n");
+  if((host = gethostbyname(hostname)) == NULL) {
+    printf("Failed to resolve host\n");
     return -1;
   }
 
@@ -42,7 +45,7 @@ int SSL_send_and_recv(char *send_buf, char *recv_buf)
 
   //Create socket
   sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-
+  
   //Connect
   if(connect(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
     printf("Cannot connect to Twitter server.\n");
@@ -87,9 +90,13 @@ int SSL_send_and_recv(char *send_buf, char *recv_buf)
   while((read_size = SSL_read(ssl, recv_buf, BUF_SIZE-1)) > 0) {
 	recv_buf[read_size] = '\0';
 #if SHOW_RESPONSE
-    fwrite(recv_buf, read_size, 1, stdout);
+    printf(recv_buf);
 #endif
   }
+
+#if SHOW_RESPONSE
+	printf("\n");
+#endif
 
   //Close SSL Session
   ret = SSL_shutdown(ssl);
@@ -97,6 +104,6 @@ int SSL_send_and_recv(char *send_buf, char *recv_buf)
     return -7;
   }
   close(sock);
-
+  
   return 0;
 }
