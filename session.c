@@ -1,5 +1,5 @@
 /* session.c - SSL connection for api.twitter.com
- * (C)2013-14 Plemling138
+ * (C)2013-15 Plemling138
  */
 
 #include <stdio.h>
@@ -57,7 +57,7 @@ int SSL_send_and_recv(char *hostname, char *send_buf, char *recv_buf)
   SSL_library_init();
   
   //Set CTX
-  ctx = SSL_CTX_new(SSLv3_client_method());
+  ctx = SSL_CTX_new(TLSv1_2_client_method());
   if(ctx == NULL) {
     return -2;
   }
